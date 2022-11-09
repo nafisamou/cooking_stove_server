@@ -24,7 +24,6 @@ app.use(express.json());
 //   error: "red",
 // });
 
-
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.grwbbr0.mongodb.net/?retryWrites=true&w=majority`;
 // console.log(uri);
 
@@ -37,7 +36,7 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     const serviceCollection = client.db("cloudKitchen").collection("services");
-    // const orderCollection = client.db("cloudKitchen").collection("orders");
+    const reviewCollection = client.db("cloudKitchen").collection("reviews");
 
     app.get("/services", async (req, res) => {
       const query = {};
@@ -64,7 +63,25 @@ async function run() {
       const service = await serviceCollection.findOne(query);
       res.send(service);
     });
-  }  catch (error) {
+
+    app.post("/reviews", async (req, res) => {
+      const review = req.body;
+      const result = await reviewCollection.insertOne(review);
+      res.send(result);
+    });
+
+    app.get("reviews", async (req, res) => {
+      let query = {};
+      if (req.query?.email) {
+        query = {
+          email: req.query.email,
+        };
+        const cursor = reviewCollection.find(query);
+        const reviews = await cursor.toArray();
+        res.send(reviews);
+      }
+    });
+  } catch (error) {
     console.log(error);
     res.send({
       success: false,
@@ -85,7 +102,7 @@ app.listen(port, () => {
     if (err) {
       console.log(err);
     } else {
-      console.log(("Connected to MongoDB"));
+      console.log("Connected to MongoDB");
     }
   });
   console.log(`Cloud Kitchen server is running on ${port}`);
