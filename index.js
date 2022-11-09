@@ -63,14 +63,14 @@ async function run() {
       const service = await serviceCollection.findOne(query);
       res.send(service);
     });
-
+/* ----------Create------------ */
     app.post("/reviews", async (req, res) => {
       const review = req.body;
       const result = await reviewCollection.insertOne(review);
       res.send(result);
     });
 
-    app.get("reviews", async (req, res) => {
+    app.get("/reviews", async (req, res) => {
       let query = {};
       if (req.query?.email) {
         query = {
@@ -80,6 +80,27 @@ async function run() {
         const reviews = await cursor.toArray();
         res.send(reviews);
       }
+    });
+/* ------Update------------- */
+    app.patch("/reviews/:id", async (req, res) => {
+      const id = req.params.id;
+      const status = req.body.status;
+      const query = { _id: ObjectId(id) };
+      const updateDoc = {
+        $set: {
+          status: status,
+        },
+      };
+      const result = await reviewCollection.updateOne(query, updateDoc);
+      res.send(result);
+    });
+
+    /* --------Delete------------- */
+    app.delete("/reviews/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await reviewCollection.deleteOne(query);
+      res.send(result);
     });
   } catch (error) {
     console.log(error);
