@@ -133,6 +133,7 @@ async function run() {
       const options = { upsert: true };
       const updateReview = {
         $set: {
+         
           customer: review.name,
 
           email: review.email,
