@@ -126,7 +126,7 @@ async function run() {
       res.send(review);
     });
     /* ------Update------------- */
-     app.put("/reviews/:id", async (req, res) => {
+      app.put("/reviews/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
       const review = req.body;
@@ -135,10 +135,10 @@ async function run() {
         $set: {
           customer: review.name,
 
-          // email: review.email,
+          email: review.email,
           // image: review.image,
 
-          message: review.feedback,
+          message: review.message,
         },
       };
       const result = await reviewCollection.updateOne(
@@ -147,9 +147,17 @@ async function run() {
         options
       );
       res.send(result);
-    }); 
+    });  
 
-      app.patch("/reviews/:id",verifyJWT, async (req, res) => {
+
+    app.post('/allServices', async (req, res) => {
+      const services = req.body
+      console.log(services)
+      const result = await serviceCollection.insertOne(services);
+      res.send(result)
+
+  });
+    /*   app.patch("/reviews/:id",verifyJWT, async (req, res) => {
       const id = req.params.id;
       const status = req.body.status;
       const query = { _id: ObjectId(id) };
@@ -160,7 +168,7 @@ async function run() {
       };
       const result = await reviewCollection.updateOne(query, updateDoc);
       res.send(result);
-    });
+    }); */
 
 
 
