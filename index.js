@@ -126,14 +126,21 @@ async function run() {
       res.send(review);
     });
     /* ------Update------------- */
-      app.put("/reviews/:id", async (req, res) => {
+
+    pp.get("/reviews/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await reviewCollection.findOne(query);
+      res.send(result);
+    });
+
+    app.put("/reviews/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
       const review = req.body;
       const options = { upsert: true };
       const updateReview = {
         $set: {
-         
           customer: review.name,
 
           email: review.email,
@@ -148,16 +155,14 @@ async function run() {
         options
       );
       res.send(result);
-    });  
+    });
 
-
-    app.post('/allServices', async (req, res) => {
-      const services = req.body
-      console.log(services)
+    app.post("/allServices", async (req, res) => {
+      const services = req.body;
+      console.log(services);
       const result = await serviceCollection.insertOne(services);
-      res.send(result)
-
-  });
+      res.send(result);
+    });
     /*   app.patch("/reviews/:id",verifyJWT, async (req, res) => {
       const id = req.params.id;
       const status = req.body.status;
@@ -171,12 +176,6 @@ async function run() {
       res.send(result);
     }); */
 
-
-
-
-
-
- 
     /* --------Delete------------- */
     app.delete("/reviews/:id", async (req, res) => {
       const id = req.params.id;
